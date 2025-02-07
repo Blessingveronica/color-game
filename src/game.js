@@ -35,7 +35,7 @@ const Game = () => {
 
   useEffect(() => {
     generateNewGame();
-  }, []);
+  }, [generateNewGame]);  // Add generateNewGame to the dependency array
 
   return (
     <div className="game-container">
