@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './game.css';
 
 const Game = () => {
@@ -8,25 +8,25 @@ const Game = () => {
   const [gameStatus, setGameStatus] = useState('');
   const [colorOptions, setColorOptions] = useState([]);
 
+  // Helper function to shuffle colors
+  const shuffleArray = (array) => {
+    return array.sort(() => Math.random() - 0.5);
+  };
+
   // Function to generate a new game
-  const generateNewGame = () => {
+  const generateNewGame = useCallback(() => {
     const randomColor = colors[Math.floor(Math.random() * colors.length)];
     setTargetColor(randomColor);
     const randomColors = [...colors];
     randomColors.splice(Math.floor(Math.random() * colors.length), 1, randomColor);
     setColorOptions(shuffleArray(randomColors));
     setGameStatus('');
-  };
-
-  // Helper function to shuffle colors
-  const shuffleArray = (array) => {
-    return array.sort(() => Math.random() - 0.5);
-  };
+  }, [colors]); // useCallback prevents unnecessary re-creation
 
   // Check if the guess is correct
   const handleGuess = (selectedColor) => {
     if (selectedColor === targetColor) {
-      setScore(score + 1);
+      setScore((prevScore) => prevScore + 1);
       setGameStatus('Correct!');
     } else {
       setGameStatus('Wrong! Try Again.');
@@ -35,7 +35,7 @@ const Game = () => {
 
   useEffect(() => {
     generateNewGame();
-  }, [generateNewGame]);  // Add generateNewGame to the dependency array
+  }, [generateNewGame]); // Now it's stable and won't trigger unnecessary re-renders
 
   return (
     <div className="game-container">
